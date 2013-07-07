@@ -151,6 +151,25 @@ void q2t_renderlist(RenderList *list) {
     if (tex) free(tex);
 }
 
+static void wrap_tex_coords(RenderList *list) {
+    if (list->tex) {
+        GLfloat *tex = list->tex;
+        GLfloat bot[] = {0, 0};
+        for (int i = 0; i < list->len * 2; i += 2) {
+            bot[0] = fmin(tex[i], bot[0]);
+            bot[1] = fmin(tex[i+1], bot[1]);
+        }
+        bot[0] = floor(bot[0]);
+        bot[1] = floor(bot[1]);
+        if (bot[0] > 0 && bot[1] > 0) {
+            for (int i = 0; i < list->len * 2; i += 2) {
+                tex[i] -= bot[0];
+                tex[i+1] -= bot[1];
+            }
+        }
+    }
+}
+
 void end_renderlist(RenderList *list) {
     switch (list->mode) {
         case GL_QUADS:
@@ -163,6 +182,9 @@ void end_renderlist(RenderList *list) {
         case GL_QUAD_STRIP:
             list->mode = GL_TRIANGLE_STRIP;
             break;
+    }
+    if (list->tex) {
+        wrap_tex_coords(list);
     }
 }
 
