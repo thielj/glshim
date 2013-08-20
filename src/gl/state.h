@@ -78,8 +78,23 @@ typedef struct {
 
 
 typedef struct {
+    GLfloat x, y, z;
+} translate_state_t;
+
+typedef struct {
+    translate_state_t translate;
+} matrix_state_t;
+
+typedef struct {
+    GLenum mode;
+    matrix_state_t model;
+} matrix_states_t;
+
+
+typedef struct {
     displaylist_state_t list;
     enable_state_t enable;
+    matrix_states_t matrix;
     map_state_t *map_grid;
     map_states_t map1, map2;
     pointer_states_t pointers;

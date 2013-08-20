@@ -134,6 +134,14 @@ void end_renderlist(renderlist_t *list) {
     if (list->tex && state.texture.rect_arb && bound) {
         tex_coord_rect_arb(list->tex, list->len, bound->width, bound->height);
     }
+    if (list->vert) {
+        for (int i = 0; i < list->len; i++) {
+            GLfloat *v = &list->vert[i * 3];
+            v[0] += state.matrix.model.translate.x;
+            v[1] += state.matrix.model.translate.y;
+            v[2] += state.matrix.model.translate.z;
+        }
+    }
     switch (list->mode) {
         case GL_QUADS:
             list->mode = GL_TRIANGLES;
