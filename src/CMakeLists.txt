@@ -2,6 +2,8 @@ include_directories(util)
 include_directories(util/eigen)
 
 file(GLOB_RECURSE GL_SOURCES gl/*.c)
+file(GLOB_RECURSE GL_CPP_SOURCES gl/*.cpp)
+list(APPEND GL_SOURCES ${GL_CPP_SOURCES})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     include_directories(glx)
