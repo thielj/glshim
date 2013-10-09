@@ -138,10 +138,7 @@ void end_renderlist(renderlist_t *list) {
     if (list->vert) {
         for (int i = 0; i < list->len; i++) {
             GLfloat *v = &list->vert[i * 3];
-            GLfloat tmp[4] = {0};
-            memcpy(&tmp, v, sizeof(GLfloat) * 3);
-            gl_transform_vertex(tmp);
-            memcpy(v, &tmp, sizeof(GLfloat) * 3);
+            gl_transform_vertex(v);
         }
     }
     switch (list->mode) {

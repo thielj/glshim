@@ -4,13 +4,11 @@
 #include "gl.h"
 #include "matrix.h"
 
-using Eigen::AngleAxis;
+using Eigen::Affine3f;
+using Eigen::AngleAxisf;
 using Eigen::Map;
 using Eigen::Matrix4f;
-using Eigen::Transform;
-using Eigen::Translation3f;
 using Eigen::Vector3f;
-using Eigen::Vector4f;
 
 extern "C" {
 
@@ -37,19 +35,19 @@ static matrix_state_t *get_matrix_state(GLenum mode) {
     }
 
     if (! m->matrix) {
-        Matrix4f *matrix = new Matrix4f;
+        Affine3f *matrix = new Affine3f;
         matrix->setIdentity();
         m->matrix = static_cast<void *>(matrix);
     }
     return m;
 }
 
-static Matrix4f *get_matrix(GLenum mode) {
+static Affine3f *get_matrix(GLenum mode) {
     matrix_state_t *state = get_matrix_state(mode);
-    return static_cast<Matrix4f *>(state->matrix);
+    return static_cast<Affine3f *>(state->matrix);
 }
 
-static Matrix4f *get_current_matrix() {
+static Affine3f *get_current_matrix() {
     return get_matrix(CURRENT_MATRIX_MODE);
 }
 
@@ -63,9 +61,9 @@ void glLoadIdentity() {
 }
 
 void glLoadMatrixf(const GLfloat *load) {
-    matrix_state_t *m = get_current_state();
+    Matrix4f *m = &get_current_matrix()->matrix();
     Matrix4f tmp = Map<Matrix4f>((GLfloat *)load);
-    m->matrix = new Matrix4f(tmp);
+    *m = tmp;
 }
 
 void glMatrixMode(GLenum mode) {
@@ -73,7 +71,7 @@ void glMatrixMode(GLenum mode) {
 }
 
 void glMultMatrixf(const GLfloat *mult) {
-    Matrix4f *m = get_current_matrix();
+    Matrix4f *m = &get_current_matrix()->matrix();
     Matrix4f tmp = Map<Matrix4f>((GLfloat *)mult);
     *m *= tmp;
 }
@@ -82,7 +80,7 @@ void glPopMatrix() {
     matrix_state_t *m = get_current_state();
     if (m->stack.len > 0) {
         void *state = m->stack.list[--m->stack.len];
-        delete static_cast<Matrix4f *>(m->matrix);
+        delete static_cast<Affine3f *>(m->matrix);
         m->matrix = state;
     }
 }
@@ -93,40 +91,30 @@ void glPushMatrix() {
         m->stack.cap += 5;
         m->stack.list = (void **)realloc(m->stack.list, sizeof(void *) * m->stack.cap);
     }
-    Matrix4f *matrix = new Matrix4f(*static_cast<Matrix4f *>(m->matrix));
+    Affine3f *matrix = new Affine3f(*static_cast<Affine3f *>(m->matrix));
     m->stack.list[m->stack.len++] = static_cast<void *>(matrix);
 }
 
 // GL transform functions
 void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
-    Matrix4f *matrix = get_current_matrix();
-    AngleAxis<float> rotate(angle, Vector3f(x, y, z));
-    Transform<float, 3, 3> t;
-    t = rotate.toRotationMatrix();
-    *matrix *= t.matrix();
+    get_current_matrix()->rotate(AngleAxisf(angle, Vector3f(x, y, z)));
 }
 
 void glScalef(GLfloat x, GLfloat y, GLfloat z) {
-    Matrix4f *matrix = get_current_matrix();
-    Eigen::DiagonalMatrix<float, 4> scale(Vector4f(x, y, z, 1));
-    *matrix *= scale;
+    get_current_matrix()->scale(Vector3f(x, y, z));
 }
 
 void glTransformf(GLfloat x, GLfloat y, GLfloat z) {
-    Matrix4f *matrix = get_current_matrix();
-    Translation3f t(x, y, z);
-    Transform<float, 3, 3> m;
-    m = t;
-    *matrix *= m.matrix();
+    get_current_matrix()->translate(Vector3f(x, y, z));
 }
 
-void gl_transform_vertex(GLfloat v[4]) {
-    Matrix4f *model = get_matrix(GL_MODELVIEW);
-    Matrix4f *projection = get_matrix(GL_PROJECTION);
-    Map<Vector4f> vert(v);
+void gl_transform_vertex(GLfloat v[3]) {
+    Affine3f *model = get_matrix(GL_MODELVIEW);
+    Affine3f *projection = get_matrix(GL_PROJECTION);
+    Map<Vector3f> vert(v);
     vert = *model * vert;
     vert = *projection * vert;
-    memcpy(v, vert.data(), sizeof(GLfloat) * 4);
+    memcpy(v, vert.data(), sizeof(GLfloat) * 3);
 }
 
 } // extern "C"
