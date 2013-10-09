@@ -116,13 +116,15 @@ void glOrthof(GLfloat left, GLfloat right,
     tx = -(right + left) / (right - left);
     ty = -(top + bottom) / (top - bottom);
     tz = -(far + near) / (far - near);
-    GLfloat tmp[] = {
-        2 / (right - left), 0, tx,
-        0, 2 / (top - bottom), ty,
-        0, 0, -2 / (far - near), tz,
-        0, 0, 0, 1,
-    };
-    glMultMatrixf(tmp);
+
+    Matrix4f tmp;
+    tmp << 2 / (right - left), 0, tx,
+           0, 2 / (top - bottom), ty,
+           0, 0, -2 / (far - near), tz,
+           0, 0, 0, 1;
+
+    Matrix4f *m = &get_current_matrix()->matrix();
+    *m *= tmp;
 }
 
 void glFrustumf(GLfloat left, GLfloat right,
@@ -133,13 +135,15 @@ void glFrustumf(GLfloat left, GLfloat right,
     B = (top + bottom) / (top - bottom);
     C = -(far + near) / (far - near);
     D = -(2 * far * near) / (far - near);
-    GLfloat tmp[] = {
-        (2 * near) / (right - left), 0, A, 0,
-        0, (2 * near) / (top - bottom), B, 0,
-        0, 0, C, D,
-        0, 0, -1, 0,
-    };
-    glMultMatrixf(tmp);
+
+    Matrix4f tmp;
+    tmp << (2 * near) / (right - left), 0, A, 0,
+           0, (2 * near) / (top - bottom), B, 0,
+           0, 0, C, D,
+           0, 0, -1, 0;
+
+    Matrix4f *m = &get_current_matrix()->matrix();
+    *m *= tmp;
 }
 
 void gl_transform_vertex(GLfloat v[3]) {
