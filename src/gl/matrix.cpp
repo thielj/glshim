@@ -118,8 +118,8 @@ void glOrthof(GLfloat left, GLfloat right,
     tz = -(far + near) / (far - near);
 
     Matrix4f tmp;
-    tmp << 2 / (right - left), 0, tx,
-           0, 2 / (top - bottom), ty,
+    tmp << 2 / (right - left), 0, 0, tx,
+           0, 2 / (top - bottom), 0, ty,
            0, 0, -2 / (far - near), tz,
            0, 0, 0, 1;
 
