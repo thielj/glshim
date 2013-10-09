@@ -33,6 +33,9 @@ const GLubyte *glGetString(GLenum name) {
 void glGetIntegerv(GLenum pname, GLint *params) {
     LOAD_GLES(glGetIntegerv);
     switch (pname) {
+        case GL_MATRIX_MODE:
+            *params = state.matrix.mode ? state.matrix.mode : GL_MODELVIEW;
+            break;
         case GL_MAX_ELEMENTS_INDICES:
             *params = 1024;
             break;
