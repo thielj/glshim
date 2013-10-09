@@ -13,7 +13,8 @@ void glMatrixMode(GLenum mode);
 void glMultMatrixf(const GLfloat *m);
 void glPopMatrix();
 void glPushMatrix();
-void gl_transform_vertex(GLfloat v[4]);
+void gl_transform_vertex(GLfloat v[3]);
+void gl_get_matrix(GLenum mode, GLfloat *out);
 
 #ifdef __cplusplus
 }

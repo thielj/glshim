@@ -8,6 +8,7 @@
 #define skip_glColor4f
 #define skip_glDisable
 #define skip_glEnable
+#define skip_glGetFloatv
 #define skip_glGetIntegerv
 #define skip_glGetString
 #define skip_glIsEnabled

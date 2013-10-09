@@ -1,4 +1,5 @@
 #include "gl.h"
+#include "matrix.h"
 
 glstate_t state = {.color = {1.0f, 1.0f, 1.0f, 1.0f}};
 
@@ -40,6 +41,23 @@ void glGetIntegerv(GLenum pname, GLint *params) {
             break;
         default:
             gles_glGetIntegerv(pname, params);
+    }
+}
+
+void glGetFloatv(GLenum pname, GLfloat *params) {
+    LOAD_GLES(glGetFloatv);
+    switch (pname) {
+        case GL_MODELVIEW_MATRIX:
+            gl_get_matrix(GL_MODELVIEW, params);
+            break;
+        case GL_PROJECTION_MATRIX:
+            gl_get_matrix(GL_PROJECTION, params);
+            break;
+        case GL_TEXTURE_MATRIX:
+            gl_get_matrix(GL_TEXTURE, params);
+            break;
+        default:
+            gles_glGetFloatv(pname, params);
     }
 }
 

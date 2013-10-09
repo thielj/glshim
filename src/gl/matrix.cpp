@@ -10,6 +10,9 @@ using Eigen::Map;
 using Eigen::Matrix4f;
 using Eigen::Vector3f;
 
+#include <iostream>
+using namespace std;
+
 extern "C" {
 
 #define CURRENT_MATRIX_MODE state.matrix.mode ? state.matrix.mode : GL_MODELVIEW
@@ -61,9 +64,8 @@ void glLoadIdentity() {
 }
 
 void glLoadMatrixf(const GLfloat *load) {
-    Matrix4f *m = &get_current_matrix()->matrix();
     Matrix4f tmp = Map<Matrix4f>((GLfloat *)load);
-    *m = tmp;
+    *get_current_matrix() = tmp;
 }
 
 void glMatrixMode(GLenum mode) {
@@ -71,9 +73,8 @@ void glMatrixMode(GLenum mode) {
 }
 
 void glMultMatrixf(const GLfloat *mult) {
-    Matrix4f *m = &get_current_matrix()->matrix();
     Matrix4f tmp = Map<Matrix4f>((GLfloat *)mult);
-    *m *= tmp;
+    *get_current_matrix() *= tmp;
 }
 
 void glPopMatrix() {
@@ -123,8 +124,7 @@ void glOrthof(GLfloat left, GLfloat right,
            0, 0, -2 / (far - near), tz,
            0, 0, 0, 1;
 
-    Matrix4f *m = &get_current_matrix()->matrix();
-    *m *= tmp;
+    *get_current_matrix() *= tmp;
 }
 
 void glFrustumf(GLfloat left, GLfloat right,
@@ -142,8 +142,11 @@ void glFrustumf(GLfloat left, GLfloat right,
            0, 0, C, D,
            0, 0, -1, 0;
 
-    Matrix4f *m = &get_current_matrix()->matrix();
-    *m *= tmp;
+    *get_current_matrix() *= tmp;
+}
+
+void gl_get_matrix(GLenum mode, GLfloat *out) {
+    memcpy(out, get_matrix(mode)->data(), sizeof(GLfloat) * 16);
 }
 
 void gl_transform_vertex(GLfloat v[3]) {
