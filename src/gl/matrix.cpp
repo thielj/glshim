@@ -14,6 +14,8 @@ using Eigen::Vector4f;
 
 extern "C" {
 
+#define CURRENT_MATRIX_MODE state.matrix.mode ? state.matrix.mode : GL_MODELVIEW
+
 // helper functions
 static matrix_state_t *get_matrix_state(GLenum mode) {
     matrix_state_t *m;
@@ -48,11 +50,11 @@ static Matrix4f *get_matrix(GLenum mode) {
 }
 
 static Matrix4f *get_current_matrix() {
-    return get_matrix(state.matrix.mode);
+    return get_matrix(CURRENT_MATRIX_MODE);
 }
 
 static matrix_state_t *get_current_state() {
-    return get_matrix_state(state.matrix.mode);
+    return get_matrix_state(CURRENT_MATRIX_MODE);
 }
 
 // GL matrix functions
@@ -71,9 +73,9 @@ void glMatrixMode(GLenum mode) {
 }
 
 void glMultMatrixf(const GLfloat *mult) {
-    Matrix4f *matrix = get_current_matrix();
+    Matrix4f *m = get_current_matrix();
     Matrix4f tmp = Map<Matrix4f>((GLfloat *)mult);
-    *matrix *= tmp;
+    *m *= tmp;
 }
 
 void glPopMatrix() {
