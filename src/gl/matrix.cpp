@@ -97,6 +97,7 @@ void glPushMatrix() {
 
 // GL transform functions
 void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
+    angle *= (M_PI / 180.0f);
     get_current_matrix()->rotate(AngleAxisf(angle, Vector3f(x, y, z)));
 }
 
