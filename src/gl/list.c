@@ -1,5 +1,6 @@
 #include "gl.h"
 #include "list.h"
+#include "matrix.h"
 
 #define alloc_sublist(n, cap) \
     (GLfloat *)malloc(n * sizeof(GLfloat) * cap)
@@ -137,9 +138,10 @@ void end_renderlist(renderlist_t *list) {
     if (list->vert) {
         for (int i = 0; i < list->len; i++) {
             GLfloat *v = &list->vert[i * 3];
-            v[0] += state.matrix.model.translate.x;
-            v[1] += state.matrix.model.translate.y;
-            v[2] += state.matrix.model.translate.z;
+            GLfloat tmp[4] = {0};
+            memcpy(&tmp, v, sizeof(GLfloat) * 3);
+            gl_transform_vertex(tmp);
+            memcpy(v, &tmp, sizeof(GLfloat) * 3);
         }
     }
     switch (list->mode) {
