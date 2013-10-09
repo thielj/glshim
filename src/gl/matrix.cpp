@@ -87,7 +87,7 @@ void glPopMatrix() {
 
 void glPushMatrix() {
     matrix_state_t *m = get_current_state();
-    if (m->stack.len + 1 < m->stack.cap) {
+    if (m->stack.len + 1 > m->stack.cap) {
         m->stack.cap += 5;
         m->stack.list = (void **)realloc(m->stack.list, sizeof(void *) * m->stack.cap);
     }
