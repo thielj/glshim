@@ -1,4 +1,5 @@
 include_directories(util)
+include_directories(util/eigen)
 
 file(GLOB_RECURSE GL_SOURCES gl/*.c)
 
