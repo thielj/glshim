@@ -17,6 +17,19 @@
 // light.c
 #define skip_glLightModelf
 
+// matrix.c
+#define skip_glLoadIdentity
+#define skip_glLoadMatrixd
+#define skip_glLoadMatrixf
+#define skip_glMatrixMode
+#define skip_glMultMatrix
+#define skip_glPopMatrix
+#define skip_glPushMatrix
+
+#define skip_glRotatef
+#define skip_glScalef
+#define skip_glTransformf
+
 // raster.c
 #define skip_glViewport
 

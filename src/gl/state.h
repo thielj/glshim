@@ -76,21 +76,23 @@ typedef struct {
                 *texture4;
 } map_states_t;
 
+// matrix structs
+typedef struct {
+    void **list;
+    int cap, len;
+} matrix_stack_t;
 
 typedef struct {
-    GLfloat x, y, z;
-} translate_state_t;
-
-typedef struct {
-    translate_state_t translate;
+    void *matrix;
+    matrix_stack_t stack;
 } matrix_state_t;
 
 typedef struct {
     GLenum mode;
-    matrix_state_t model;
+    matrix_state_t model, projection, texture, color;
 } matrix_states_t;
 
-
+// top-level struct
 typedef struct {
     displaylist_state_t list;
     enable_state_t enable;
