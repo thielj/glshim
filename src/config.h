@@ -19,10 +19,9 @@
 
 // matrix.c
 #define skip_glLoadIdentity
-#define skip_glLoadMatrixd
 #define skip_glLoadMatrixf
 #define skip_glMatrixMode
-#define skip_glMultMatrix
+#define skip_glMultMatrixf
 #define skip_glPopMatrix
 #define skip_glPushMatrix
 
