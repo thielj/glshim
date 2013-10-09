@@ -108,6 +108,39 @@ void glTransformf(GLfloat x, GLfloat y, GLfloat z) {
     get_current_matrix()->translate(Vector3f(x, y, z));
 }
 
+void glOrthof(GLfloat left, GLfloat right,
+              GLfloat bottom, GLfloat top,
+              GLfloat near, GLfloat far) {
+    GLfloat tx, ty, tz;
+    tx = -(right + left) / (right - left);
+    ty = -(top + bottom) / (top - bottom);
+    tz = -(far + near) / (far - near);
+    GLfloat tmp[] = {
+        2 / (right - left), 0, tx,
+        0, 2 / (top - bottom), ty,
+        0, 0, -2 / (far - near), tz,
+        0, 0, 0, 1,
+    };
+    glMultMatrixf(tmp);
+}
+
+void glFrustumf(GLfloat left, GLfloat right,
+                GLfloat bottom, GLfloat top,
+                GLfloat near, GLfloat far) {
+    GLfloat A, B, C, D;
+    A = (right + left) / (right - left);
+    B = (top + bottom) / (top - bottom);
+    C = -(far + near) / (far - near);
+    D = -(2 * far * near) / (far - near);
+    GLfloat tmp[] = {
+        (2 * near) / (right - left), 0, A, 0,
+        0, (2 * near) / (top - bottom), B, 0,
+        0, 0, C, D,
+        0, 0, -1, 0,
+    };
+    glMultMatrixf(tmp);
+}
+
 void gl_transform_vertex(GLfloat v[3]) {
     Affine3f *model = get_matrix(GL_MODELVIEW);
     Affine3f *projection = get_matrix(GL_PROJECTION);

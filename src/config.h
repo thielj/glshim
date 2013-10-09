@@ -29,6 +29,9 @@
 #define skip_glScalef
 #define skip_glTransformf
 
+#define skip_glFrustumf
+#define skip_glOrthof
+
 // raster.c
 #define skip_glViewport
 
