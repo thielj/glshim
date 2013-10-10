@@ -10,9 +10,6 @@ using Eigen::Map;
 using Eigen::Matrix4f;
 using Eigen::Vector3f;
 
-#include <iostream>
-using namespace std;
-
 extern "C" {
 
 #define CURRENT_MATRIX_MODE state.matrix.mode ? state.matrix.mode : GL_MODELVIEW
