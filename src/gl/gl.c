@@ -165,52 +165,18 @@ static renderlist_t *arrays_to_renderlist(renderlist_t *list, GLenum mode,
     return list;
 }
 
-static inline bool should_intercept_render(GLenum mode) {
-    return (
-        (state.enable.vertex_array && ! valid_vertex_type(state.pointers.vertex.type)) ||
-        state.enable.texgen_s || state.enable.texgen_t ||
-        (mode == GL_LINES && state.enable.line_stipple) ||
-        mode == GL_QUADS
-    );
-}
-
 void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *uindices) {
     // TODO: split for count > 65535?
     GLushort *indices = copy_gl_array(uindices, type, 1, 0, GL_UNSIGNED_SHORT, 1, 0, count);
     // TODO: do this in a more direct fashion.
-    if (should_intercept_render(mode)) {
-        glBegin(mode);
-        for (int i = 0; i < count; i++) {
-            glArrayElement(indices[i]);
-        }
-        glEnd();
-        free(indices);
-        return;
+    // TODO: deal with VBOs
+    glBegin(mode);
+    for (int i = 0; i < count; i++) {
+        glArrayElement(indices[i]);
     }
-
-    bool compiling = (state.list.active && state.list.compiling);
-    if (compiling) {
-        renderlist_t *list = NULL;
-        GLsizei min, max;
-
-        if (compiling)
-            list = state.list.active = extend_renderlist(state.list.active);
-
-        normalize_indices(indices, &max, &min, count);
-        list = arrays_to_renderlist(list, mode, 0, max + 1);
-        list->indices = indices;
-        list->len = count;
-
-        end_renderlist(list);
-        if (! compiling) {
-            draw_renderlist(list);
-            free_renderlist(list);
-        }
-    } else {
-        LOAD_GLES(glDrawElements);
-        gles_glDrawElements(mode, count, type, indices);
-        free(indices);
-    }
+    glEnd();
+    free(indices);
+    return;
 }
 
 void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
@@ -224,17 +190,10 @@ void glDrawArrays(GLenum mode, GLint first, GLsizei count) {
         return;
     }
 
-    if (should_intercept_render(mode)) {
-        list = arrays_to_renderlist(NULL, mode, first, count);
-        end_renderlist(list);
-        draw_renderlist(list);
-        free_renderlist(list);
-    } else {
-        // TODO: some draw states require us to use the full pipeline here
-        // like texgen, stipple, npot
-        LOAD_GLES(glDrawArrays);
-        gles_glDrawArrays(mode, first, count);
-    }
+    list = arrays_to_renderlist(NULL, mode, first, count);
+    end_renderlist(list);
+    draw_renderlist(list);
+    free_renderlist(list);
 }
 
 #ifndef USE_ES2
