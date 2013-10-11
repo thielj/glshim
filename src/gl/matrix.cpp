@@ -4,11 +4,7 @@
 #include "gl.h"
 #include "matrix.h"
 
-using Eigen::Affine3f;
-using Eigen::AngleAxisf;
-using Eigen::Map;
-using Eigen::Matrix4f;
-using Eigen::Vector3f;
+using namespace Eigen;
 
 extern "C" {
 
@@ -149,10 +145,12 @@ void gl_get_matrix(GLenum mode, GLfloat *out) {
 void gl_transform_vertex(GLfloat v[3]) {
     Affine3f *model = get_matrix(GL_MODELVIEW);
     Affine3f *projection = get_matrix(GL_PROJECTION);
+    Projective3f MVP = (*model) * (*projection);
+
     Map<Vector3f> vert(v);
-    vert = *model * vert;
-    vert = *projection * vert;
-    memcpy(v, vert.data(), sizeof(GLfloat) * 3);
+    Vector3f out;
+    out.noalias() = (MVP * vert.homogeneous()).colwise().hnormalized();
+    memcpy(v, out.data(), sizeof(GLfloat) * 3);
 }
 
 } // extern "C"
