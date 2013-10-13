@@ -1,3 +1,0 @@
-[submodule "src/util/eigen"]
-	path = src/util/eigen
-	url = https://github.com/lunixbochs/eigen.git

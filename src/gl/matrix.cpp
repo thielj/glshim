@@ -1,10 +1,9 @@
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "gl.h"
 #include "matrix.h"
-
-using namespace Eigen;
 
 extern "C" {
 
@@ -31,19 +30,18 @@ static matrix_state_t *get_matrix_state(GLenum mode) {
     }
 
     if (! m->matrix) {
-        Matrix4f *matrix = new Matrix4f;
-        matrix->setIdentity();
+        glm::mat4 *matrix = new glm::mat4();
         m->matrix = static_cast<void *>(matrix);
     }
     return m;
 }
 
-static Matrix4f *get_matrix(GLenum mode) {
+static glm::mat4 *get_matrix(GLenum mode) {
     matrix_state_t *state = get_matrix_state(mode);
-    return static_cast<Matrix4f *>(state->matrix);
+    return static_cast<glm::mat4 *>(state->matrix);
 }
 
-static Matrix4f *get_current_matrix() {
+static glm::mat4 *get_current_matrix() {
     return get_matrix(CURRENT_MATRIX_MODE);
 }
 
@@ -53,28 +51,28 @@ static matrix_state_t *get_current_state() {
 
 // GL matrix functions
 void glLoadIdentity() {
-    get_current_matrix()->setIdentity();
+    *get_current_matrix() = glm::mat4();
 }
 
 void glLoadMatrixf(const GLfloat *load) {
-    Matrix4f tmp = Map<Matrix4f>((GLfloat *)load);
-    *get_current_matrix() = tmp;
+    *get_current_matrix() = glm::make_mat4(load);
 }
 
 void glMatrixMode(GLenum mode) {
     state.matrix.mode = mode;
+    LOAD_GLES(glMatrixMode);
+    gles_glMatrixMode(state.matrix.mode);
 }
 
 void glMultMatrixf(const GLfloat *mult) {
-    Matrix4f tmp = Map<Matrix4f>((GLfloat *)mult);
-    *get_current_matrix() *= tmp;
+    *get_current_matrix() *= glm::make_mat4(mult);
 }
 
 void glPopMatrix() {
     matrix_state_t *m = get_current_state();
     if (m->stack.len > 0) {
         void *state = m->stack.list[--m->stack.len];
-        delete static_cast<Matrix4f *>(m->matrix);
+        delete static_cast<glm::mat4 *>(m->matrix);
         m->matrix = state;
     }
 }
@@ -85,76 +83,49 @@ void glPushMatrix() {
         m->stack.cap += 5;
         m->stack.list = (void **)realloc(m->stack.list, sizeof(void *) * m->stack.cap);
     }
-    Matrix4f *matrix = new Matrix4f(*static_cast<Matrix4f *>(m->matrix));
+    glm::mat4 *matrix = new glm::mat4(*static_cast<glm::mat4 *>(m->matrix));
     m->stack.list[m->stack.len++] = static_cast<void *>(matrix);
 }
 
 // GL transform functions
 void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
-    angle *= (M_PI / 180.0f);
-    Affine3f rotate(AngleAxisf(angle, Vector3f(x, y, z)));
-    *get_current_matrix() *= rotate.matrix();
+    glm::mat4 *m = get_current_matrix();
+    *m = glm::rotate(*m, angle, glm::vec3(x, y, z));
 }
 
 void glScalef(GLfloat x, GLfloat y, GLfloat z) {
-    DiagonalMatrix<float, 4> scale(Vector4f(x, y, z, 1));
-    *get_current_matrix() *= scale;
+    glm::mat4 *m = get_current_matrix();
+    *m = glm::scale(*m, glm::vec3(x, y, z));
 }
 
 void glTransformf(GLfloat x, GLfloat y, GLfloat z) {
-    Transform<float, 3, 3> translate;
-    translate = Translation3f(x, y, z);
-    *get_current_matrix() *= translate.matrix();
+    glm::mat4 *m = get_current_matrix();
+    *m = glm::translate(*m, glm::vec3(x, y, z));
 }
 
 void glOrthof(GLfloat left, GLfloat right,
               GLfloat bottom, GLfloat top,
               GLfloat near, GLfloat far) {
-    GLfloat tx, ty, tz;
-    tx = -(right + left) / (right - left);
-    ty = -(top + bottom) / (top - bottom);
-    tz = -(far + near) / (far - near);
-
-    Matrix4f tmp;
-    tmp << 2 / (right - left), 0, 0, tx,
-           0, 2 / (top - bottom), 0, ty,
-           0, 0, -2 / (far - near), tz,
-           0, 0, 0, 1;
-
-    *get_current_matrix() *= tmp;
+    *get_current_matrix() *= glm::ortho(left, right, bottom, top, near, far);
 }
 
 void glFrustumf(GLfloat left, GLfloat right,
                 GLfloat bottom, GLfloat top,
                 GLfloat near, GLfloat far) {
-    GLfloat A, B, C, D;
-    A = (right + left) / (right - left);
-    B = (top + bottom) / (top - bottom);
-    C = -(far + near) / (far - near);
-    D = -(2 * far * near) / (far - near);
-
-    Matrix4f tmp;
-    tmp << (2 * near) / (right - left), 0, A, 0,
-           0, (2 * near) / (top - bottom), B, 0,
-           0, 0, C, D,
-           0, 0, -1, 0;
-
-    *get_current_matrix() *= tmp;
+    *get_current_matrix() *= glm::frustum(left, right, bottom, top, near, far);
 }
 
 void gl_get_matrix(GLenum mode, GLfloat *out) {
-    memcpy(out, get_matrix(mode)->data(), sizeof(GLfloat) * 16);
+    memcpy(out, glm::value_ptr(*get_matrix(mode)), sizeof(GLfloat) * 16);
 }
 
 void gl_transform_vertex(GLfloat v[3]) {
-    Matrix4f *model = get_matrix(GL_MODELVIEW);
-    Matrix4f *projection = get_matrix(GL_PROJECTION);
-    Matrix4f MVP = (*projection) * (*model);
+    glm::mat4 *model = get_matrix(GL_MODELVIEW);
+    glm::mat4 *projection = get_matrix(GL_PROJECTION);
 
-    Map<Vector3f> vert(v);
-    Vector3f out;
-    out.noalias() = (MVP * vert.homogeneous()).colwise().hnormalized();
-    memcpy(v, out.data(), sizeof(GLfloat) * 3);
+    glm::vec4 vert = glm::vec4(v[0], v[1], v[2], 1);
+    vert = (*projection) * (*model) * vert;
+    memcpy(v, glm::value_ptr(vert), sizeof(GLfloat) * 3);
 }
 
 } // extern "C"
