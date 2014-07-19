@@ -75,13 +75,15 @@ static void *swizzle_texture(GLsizei width, GLsizei height,
     }
 
     if (convert) {
-        GLvoid *pixels = (GLvoid *)data;
-        if (! pixel_convert(data, &pixels, width, height,
-                            *format, *type, GL_RGBA, GL_UNSIGNED_BYTE)) {
-            printf("libGL swizzle error: (%#4x, %#4x -> RGBA, UNSIGNED_BYTE)\n",
-                *format, *type);
-            return NULL;
-        }
+	GLvoid *pixels = (GLvoid *)data;
+	if (data) {
+	    if (! pixel_convert(data, &pixels, width, height,
+				*format, *type, GL_RGBA, GL_UNSIGNED_BYTE)) {
+		printf("libGL swizzle error: (%#4x, %#4x -> RGBA, UNSIGNED_BYTE)\n",
+		    *format, *type);
+		return NULL;
+	    }
+	}
         *type = GL_UNSIGNED_BYTE;
         *format = GL_RGBA;
         return pixels;
@@ -137,6 +139,8 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat,
                 pixel_to_ppm(pixels, width, height, format, type, bound->texture);
             }
         }
+    } else {
+	swizzle_texture(width, height, &format, &type, NULL);	// convert format even if data is NULL
     }
 
     /* TODO:
