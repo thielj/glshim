@@ -73,9 +73,9 @@ bool remap_pixel(const GLvoid *src, GLvoid *dst,
         type_case(GL_UNSIGNED_SHORT_1_5_5_5_REV, GLushort,
             s = (GLushort[]){
                 v & 31,
-                (v & 0x03e0 >> 5),
-                (v & 0x7c00 >> 10),
-                (v & 0x8000 >> 15)* 31,
+                ((v & 0x03e0) >> 5),
+                ((v & 0x7c00) >> 10),
+                ((v & 0x8000) >> 15)* 31,
             };
             read_each(, / 31.0f);
         )
