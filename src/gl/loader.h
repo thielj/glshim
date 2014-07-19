@@ -11,7 +11,6 @@
 
 // will become a reference to dlopen'd gles
 extern void *gles;
-extern GetProcAddress_PTR gles_GetProcAddress;
 
 static const char *gles_ext[] = {
     "so",
@@ -94,9 +93,7 @@ static void load_gles_lib() {
             if (gles == NULL) {                           \
                 load_gles_lib();                          \
             }                                             \
-            if (gles_GetProcAddress==NULL)                \
-                gles_GetProcAddress=(GetProcAddress_PTR)dlsym(gles, "eglGetProcAddress"); \
-            gles_##name = (name##_PTR)gles_GetProcAddress(#name); \
+            gles_##name = (name##_PTR)eglGetProcAddress(#name); \
         }                                                 \
     }
 #endif

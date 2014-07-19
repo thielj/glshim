@@ -7,7 +7,6 @@ static tack_t mock = {0};
 
 const char *mock_name(int func) {
     switch (func) {
-        case GetProcAddress_INDEX: return "GetProcAddress";
         case glActiveTexture_INDEX: return "glActiveTexture";
         case glAlphaFunc_INDEX: return "glAlphaFunc";
         case glAlphaFuncx_INDEX: return "glAlphaFuncx";
@@ -166,12 +165,6 @@ void mock_print(const indexed_call_t *packed) {
         return;
     }
     switch (packed->func) {
-        case GetProcAddress_INDEX: {
-            INDEXED_void__GENPT___const_char___GENPT__ *unpacked = (INDEXED_void__GENPT___const_char___GENPT__ *)packed;
-            ARGS_void__GENPT___const_char___GENPT__ args = unpacked->args;
-            printf("GetProcAddress(%p);\n", args.a1);
-            break;
-        }
         case glActiveTexture_INDEX: {
             INDEXED_void_GLenum *unpacked = (INDEXED_void_GLenum *)packed;
             ARGS_void_GLenum args = unpacked->args;
@@ -1101,10 +1094,6 @@ void *mock_pop() {
     return tack_pop(&mock);
 }
 
-void* gles_GetProcAddress(const char * procname) {
-    emit_GetProcAddress(procname);
-    return (void*)0;
-}
 void gles_glActiveTexture(GLenum texture) {
     emit_glActiveTexture(texture);
 }

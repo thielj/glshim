@@ -6,5 +6,3 @@ glBlendColorOES: [void, GLclampf red, GLclampf green, GLclampf blue, GLclampf al
 glBlendEquationOES: [void, GLenum mode]
 glBlendEquationSeparateOES: [void, GLenum modeRGB, GLenum modeAlpha]
 glBlendFuncSeparateOES: [void, GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha]
-
-GetProcAddress: [void*, const char * procname]

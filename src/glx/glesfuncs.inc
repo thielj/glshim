@@ -1,4 +1,3 @@
-EX(GetProcAddress);
 EX(glActiveTexture);
 EX(glAlphaFunc);
 EX(glAlphaFuncx);
