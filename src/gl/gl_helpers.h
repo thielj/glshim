@@ -17,6 +17,7 @@
         GL_TYPE_CASE(name, var, GL_FLOAT, GLfloat, code)           \
         GL_TYPE_CASE(name, var, GL_INT, GLint, code)               \
         GL_TYPE_CASE(name, var, GL_SHORT, GLshort, code)           \
+        GL_TYPE_CASE(name, var, GL_BYTE, GLbyte, code)             \
         GL_TYPE_CASE(name, var, GL_UNSIGNED_BYTE, GLubyte, code)   \
         GL_TYPE_CASE(name, var, GL_UNSIGNED_INT, GLuint, code)     \
         GL_TYPE_CASE(name, var, GL_UNSIGNED_SHORT, GLushort, code) \
@@ -41,6 +42,7 @@ static const GLsizei gl_sizeof(GLenum type) {
             return 3;
         case GL_LUMINANCE_ALPHA:
         case GL_UNSIGNED_SHORT:
+        case GL_SHORT:
         case GL_UNSIGNED_SHORT_1_5_5_5_REV:
         case GL_UNSIGNED_SHORT_4_4_4_4:
         case GL_UNSIGNED_SHORT_4_4_4_4_REV:
@@ -50,6 +52,7 @@ static const GLsizei gl_sizeof(GLenum type) {
         case GL_2_BYTES:
             return 2;
         case GL_LUMINANCE:
+        case GL_BYTE:
         case GL_UNSIGNED_BYTE:
         case GL_UNSIGNED_BYTE_2_3_3_REV:
         case GL_UNSIGNED_BYTE_3_3_2:
