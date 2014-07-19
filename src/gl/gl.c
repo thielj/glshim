@@ -6,7 +6,8 @@
 #include "types.h"
 
 void *gles = NULL;
-GetProcAddress_PTR gles_GetProcAddress = NULL;
+
+void *eglGetProcAddress(const char *);
 
 glstate_t state = {
     .current = {
@@ -99,17 +100,17 @@ static block_t *block_from_arrays(GLenum mode, GLsizei skip, GLsizei count) {
     block->len = count;
     block->cap = count;
     if (state.enable.vertex_array) {
-        block->vert = copy_gl_pointer(&state.pointers.vertex, 3, skip, count);
+        block->vert = copy_gl_pointer_raw(&state.pointers.vertex, 3, skip, count);
     }
     if (state.enable.color_array) {
         block->color = copy_gl_pointer(&state.pointers.color, 4, skip, count);
     }
     if (state.enable.normal_array) {
-        block->normal = copy_gl_pointer(&state.pointers.normal, 3, skip, count);
+        block->normal = copy_gl_pointer_raw(&state.pointers.normal, 3, skip, count);
     }
     for (int i = 0; i < MAX_TEX; i++) {
         if (state.enable.tex_coord_array[i]) {
-            block->tex[i] = copy_gl_pointer(&state.pointers.tex_coord[i], 2, skip, count);
+            block->tex[i] = copy_gl_pointer_raw(&state.pointers.tex_coord[i], 2, skip, count);
         }
     }
     return block;
