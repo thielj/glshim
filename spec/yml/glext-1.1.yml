@@ -2,3 +2,7 @@
 # glTexGenfvOES: [void, GLenum coord, GLenum pname, "const GLfloat *params"]
 # glTexGeniOES: [void, GLenum coord, GLenum pname, GLint param]
 # glTexGenivOES: [void, GLenum coord, GLenum pname, "const GLint *params"]
+glBlendColorOES: [void, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha]
+glBlendEquationOES: [void, GLenum mode]
+glBlendEquationSeparateOES: [void, GLenum modeRGB, GLenum modeA]
+glBlendFuncSeparateOES: [void, GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha]

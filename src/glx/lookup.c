@@ -14,6 +14,8 @@
 
 #define ARB(func_name) MAP(#func_name "ARB", func_name)
 
+#define EXT(func_name) MAP(#func_name "EXT", func_name)
+
 #define STUB(func_name)                       \
     if (strcmp(name, #func_name) == 0) {      \
         printf("glX stub: %s\n", #func_name); \
@@ -132,7 +134,23 @@ void *glXGetProcAddressARB(const GLubyte *name) {
     EX(glMultiTexCoord3##suffix##v);  \
     EX(glMultiTexCoord3##suffix);     \
     EX(glMultiTexCoord4##suffix##v);  \
-    EX(glMultiTexCoord4##suffix);
+    EX(glMultiTexCoord4##suffix);     \
+    EXT(glMultiTexCoord1##suffix##v); \
+    EXT(glMultiTexCoord1##suffix);    \
+    EXT(glMultiTexCoord2##suffix##v); \
+    EXT(glMultiTexCoord2##suffix);    \
+    EXT(glMultiTexCoord3##suffix##v); \
+    EXT(glMultiTexCoord3##suffix);    \
+    EXT(glMultiTexCoord4##suffix##v); \
+    EXT(glMultiTexCoord4##suffix);    \
+    EXT(glMultiTexCoord1##suffix##v); \
+    ARB(glMultiTexCoord1##suffix);    \
+    ARB(glMultiTexCoord2##suffix##v); \
+    ARB(glMultiTexCoord2##suffix);    \
+    ARB(glMultiTexCoord3##suffix##v); \
+    ARB(glMultiTexCoord3##suffix);    \
+    ARB(glMultiTexCoord4##suffix##v); \
+    ARB(glMultiTexCoord4##suffix);
 
     THUNK(b, GLbyte);
     THUNK(d, GLdouble);
@@ -152,8 +170,11 @@ void *glXGetProcAddressARB(const GLubyte *name) {
 #endif
 
     // functions we actually define
-    EX(glActiveTextureARB);
+    EX(glActiveTexture);
+    EXT(glActiveTexture);
+    ARB(glActiveTexture);
     EX(glArrayElement);
+    EXT(glArrayElement);
     EX(glBegin);
     EX(glBitmap);
     EX(glBlendEquationSeparatei);
@@ -162,7 +183,9 @@ void *glXGetProcAddressARB(const GLubyte *name) {
     EX(glCallList);
     EX(glCallLists);
     EX(glClearDepth);
-    EX(glClientActiveTextureARB);
+    EX(glClientActiveTexture);
+    EXT(glClientActiveTexture);
+    ARB(glClientActiveTexture);
     EX(glClipPlane);
     EX(glCopyPixels);
     EX(glDeleteLists);
@@ -222,13 +245,9 @@ void *glXGetProcAddressARB(const GLubyte *name) {
     EX(glMapGrid2f);
     EX(glMateriali);
     EX(glMultiTexCoord2f);
-    EX(glMultiTexCoord2fARB);
     EX(glMultiTexCoord2fv);
-    EX(glMultiTexCoord2fvARB);
     EX(glMultiTexCoord4f);
-    EX(glMultiTexCoord4fARB);
     EX(glMultiTexCoord4fv);
-    EX(glMultiTexCoord4fvARB);
     EX(glMultMatrixd);
     EX(glNewList);
     EX(glOrtho);
