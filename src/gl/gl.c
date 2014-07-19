@@ -6,6 +6,8 @@
 #include "types.h"
 
 void *gles = NULL;
+GetProcAddress_PTR gles_GetProcAddress = NULL;
+
 glstate_t state = {
     .current = {
         .color = {1.0f, 1.0f, 1.0f, 1.0f},
@@ -579,3 +581,26 @@ void glListBase(GLuint base) {
 GLboolean glIsList(GLuint list) {
     return get_list(list) ? true : false;
 }
+
+// glBlendXXXX functions
+#ifndef USE_ES2
+void glBlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) {
+    PUSH_IF_COMPILING(glBlendColor);
+    PROXY_GLES_OES(glBlendColorOES);
+}
+
+void glBlendEquation(GLenum mode) {
+    PUSH_IF_COMPILING(glBlendEquation);
+    PROXY_GLES_OES(glBlendEquationOES);
+}
+
+void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha) {
+    PUSH_IF_COMPILING(glBlendEquationSeparate);
+    PROXY_GLES_OES(glBlendEquationSeparateOES);
+}
+
+void glBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha) {
+    PUSH_IF_COMPILING(glBlendFuncSeparate);
+    PROXY_GLES_OES(glBlendFuncSeparateOES);
+}
+#endif

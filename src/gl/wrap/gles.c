@@ -452,6 +452,12 @@ void glPackedCall(const packed_call_t *packed) {
             unpacked->func(args.a1, args.a2, args.a3, args.a4, args.a5, args.a6, args.a7, args.a8, args.a9);
             break;
         }
+        case FORMAT_void__GENPT___const_char___GENPT__: {
+            PACKED_void__GENPT___const_char___GENPT__ *unpacked = (PACKED_void__GENPT___const_char___GENPT__ *)packed;
+            ARGS_void__GENPT___const_char___GENPT__ args = unpacked->args;
+            unpacked->func(args.a1);
+            break;
+        }
         case FORMAT_void_GLenum_GLenum_GLenum_GLenum: {
             PACKED_void_GLenum_GLenum_GLenum_GLenum *unpacked = (PACKED_void_GLenum_GLenum_GLenum_GLenum *)packed;
             ARGS_void_GLenum_GLenum_GLenum_GLenum args = unpacked->args;
@@ -460,6 +466,15 @@ void glPackedCall(const packed_call_t *packed) {
         }
     }
 }
+#ifndef skip_GetProcAddress
+void* GetProcAddress(const char * procname) {
+    LOAD_GLES(GetProcAddress);
+#ifndef direct_GetProcAddress
+    PUSH_IF_COMPILING(GetProcAddress);
+#endif
+    return gles_GetProcAddress(procname);
+}
+#endif
 #ifndef skip_glActiveTexture
 void glActiveTexture(GLenum texture) {
     LOAD_GLES(glActiveTexture);
@@ -524,12 +539,12 @@ void glBlendEquationOES(GLenum mode) {
 }
 #endif
 #ifndef skip_glBlendEquationSeparateOES
-void glBlendEquationSeparateOES(GLenum modeRGB, GLenum modeA) {
+void glBlendEquationSeparateOES(GLenum modeRGB, GLenum modeAlpha) {
     LOAD_GLES(glBlendEquationSeparateOES);
 #ifndef direct_glBlendEquationSeparateOES
     PUSH_IF_COMPILING(glBlendEquationSeparateOES);
 #endif
-    gles_glBlendEquationSeparateOES(modeRGB, modeA);
+    gles_glBlendEquationSeparateOES(modeRGB, modeAlpha);
 }
 #endif
 #ifndef skip_glBlendFunc

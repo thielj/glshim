@@ -25,7 +25,10 @@ const GLubyte *glGetString(GLenum name) {
                 "GL_ARB_texture_env_add "
                 "GL_ARB_texture_border_clamp "
                 "GL_ARB_texture_mirrored_repeat "
-                
+                "GL_EXT_blend_color "
+                "GL_EXT_blend_subtract "
+                "GL_EXT_blend_logic_op "
+                "GL_EXT_blend_func_separate "
 #else
                 "GL_ARB_vertex_shader "
                 "GL_ARB_fragment_shader "

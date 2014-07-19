@@ -281,6 +281,15 @@ void *glXGetProcAddressARB(const GLubyte *name) {
     EX(glTexImage3D);
     EX(glTranslated);
     EX(glUnlockArraysEXT);
+    // glBlendXXXX function
+    EX(glBlendColor);
+    EXT(glBlendColor);
+    EX(glBlendEquation);
+    EXT(glBlendEquation);
+    EX(glBlendEquationSeparate);
+    EXT(glBlendEquationSeparate);
+    EX(glBlendFuncSeparate);
+    EXT(glBlendFuncSeparate);
 
     // stubs for unimplemented functions
     STUB(glAccum);

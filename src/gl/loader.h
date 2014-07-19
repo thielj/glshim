@@ -11,6 +11,7 @@
 
 // will become a reference to dlopen'd gles
 extern void *gles;
+extern GetProcAddress_PTR gles_GetProcAddress;
 
 static const char *gles_ext[] = {
     "so",
@@ -83,6 +84,23 @@ static void load_gles_lib() {
     }
 #endif
 
+#ifndef LOAD_GLES_OES
+#define LOAD_GLES_OES(name)                               \
+    static name##_PTR gles_##name;                        \
+    {                                                     \
+        static bool first = true;                         \
+        if (first) {                                      \
+            first = false;                                \
+            if (gles == NULL) {                           \
+                load_gles_lib();                          \
+            }                                             \
+            if (gles_GetProcAddress==NULL)                \
+                gles_GetProcAddress=(GetProcAddress_PTR)dlsym(gles, "eglGetProcAddress"); \
+            gles_##name = (name##_PTR)gles_GetProcAddress(#name); \
+        }                                                 \
+    }
+#endif
+
 #ifndef PUSH_IF_COMPILING_EXT
 #define PUSH_IF_COMPILING_EXT(name, ...)             \
     if (state.list.active) {                         \
@@ -98,6 +116,13 @@ static void load_gles_lib() {
 #ifndef PROXY_GLES
 #define PROXY_GLES(name) \
     LOAD_GLES_SILENT(name); \
+    if (gles_##name != NULL) { \
+        return gles_##name(name##_ARG_NAMES); \
+    }
+#endif
+#ifndef PROXY_GLES_OES
+#define PROXY_GLES_OES(name) \
+    LOAD_GLES_OES(name); \
     if (gles_##name != NULL) { \
         return gles_##name(name##_ARG_NAMES); \
     }

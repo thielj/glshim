@@ -4,5 +4,7 @@
 # glTexGenivOES: [void, GLenum coord, GLenum pname, "const GLint *params"]
 glBlendColorOES: [void, GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha]
 glBlendEquationOES: [void, GLenum mode]
-glBlendEquationSeparateOES: [void, GLenum modeRGB, GLenum modeA]
+glBlendEquationSeparateOES: [void, GLenum modeRGB, GLenum modeAlpha]
 glBlendFuncSeparateOES: [void, GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha]
+
+GetProcAddress: [void*, const char * procname]
