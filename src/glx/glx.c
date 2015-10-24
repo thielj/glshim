@@ -215,6 +215,7 @@ static void signal_handler(int sig) {
     }
 #endif
 
+#ifndef ANDROID
     if (g_stacktrace) {
         switch (sig) {
             case SIGBUS:
@@ -233,6 +234,8 @@ static void signal_handler(int sig) {
             }
         }
     }
+#endif    
+    
     signal(sig, SIG_DFL);
     raise(sig);
 }

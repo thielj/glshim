@@ -4,6 +4,7 @@
  * From Mesa-9.0.1
  */
 
+#ifndef ANDROID
 void
 fill_bitmap(Display * dpy, Window win, GC gc,
             unsigned int width, unsigned int height,
@@ -87,3 +88,4 @@ isvalid(XFontStruct * fs, int which)
    return (NULL);
 }
 
+#endif //ANDROID
